@@ -82,7 +82,7 @@ class iDeal extends PluginBase implements Listener {
 		}
 		$this->EconomyAPI = \onebone\economyapi\EconomyAPI::getInstance();
 		
-		if($this->setting['update-check']) { $this->event->checkUpdate("1.0.6"); }
+		if($this->setting['update-check']) { $this->event->checkUpdate("1.0.7"); }
 		$this->getLogger()->info(TextFormat::GREEN . "iDeal - 거래플러그인 [안전거래|아이템클라우드|아이템판매기|상점]");
 		$this->packet["AddItemEntity"] = new AddItemEntityPacket();
 		$this->packet["AddItemEntity"]->yaw = 0;

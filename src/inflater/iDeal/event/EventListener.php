@@ -272,41 +272,29 @@ class EventListener implements Listener {
 			"cant-use-command" => "당신은 이 명령어를 사용할 권한이 없습니다",
 			"must-use-in-game" => "본 명령어는 인게임 내에서만 사용이 가능합니다."
 		)))->getAll();
-		
-		$this->plugin->setting = (new Config ( $this->plugin->getDataFolder() . "iDeal.yml", Config::YAML, array(
-			"update-check" => true,
 
-			"safedeal" => true, // 안전거래기능 사용여부
-			"safedeal_ban-item" => "", // 안전거래를 금지시킬 아이템 코드 ( ,로 구분 )
+		if(file_exists($this->plugin->getDataFolder() . "iDeal.yml")) {
+			$this->plugin->getLogger()->warning("설정파일이 'iDeal.yml' 입니다. 1.0.7v 이후로 'config.yml' 으로 변경되었습니다.");
+			$this->plugin->getLogger()->warning("곧 'iDeal.yml' 파일 로드는 지원이 중단됩니다. 'config.yml' 으로 변경바랍니다.");
+			$this->plugin->setting = (new Config($this->plugin->getDataFolder() . "iDeal.yml", Config::YAML))->getAll();
+		}else{
+			$this->plugin->saveResource("config.yml", false);
+			$this->plugin->setting = (new Config ( $this->plugin->getDataFolder() . "config.yml", Config::YAML))->getAll();
+		}
 
-			"itemcloud" => true, // 아이템클라우드기능 사용여부
-			"itemcloud_default-size" => 5, // 클라우드 기본용량
-			"itemcloud_expansion-price" => 100000, // 클라우드 확장비용
-			"itemcloud_expansion-size" => 5, // 클라우드 확장시 추가용량
-			"itemcloud_ban-item" => "", // 클라우드 업로드를 금지시킬 아이템 코드 ( ,로 구분 )
-			
-			"vmachine" => true, // 아이템판매기기능 사용여부 ( 클라우드와 연동 )
-			"vmachine_create-type" => 0, // 0 = 표지판설치, 1 = 자동설치 , 2 = 유리클릭설치
-			"vmachine_install-price" => 500000, // 판매기 설치금액
-			"vmachine_ban-item" => "", // 판매기 등록을 금지시킬 아이템 코드 ( ,로 구분 )
-
-			"shop" => true, // 상점기능 사용여부
-
-			"auction" => true, // 경매기능 사용여부
-			"auction-commission" => "1/10", // 경매 진행 수수료
-			"auction-countdown" => false, // 경매 입찰 카운트다운
-
-			"item-drop" => true //아이템드랍
-		)))->getAll();
-
-		$this->plugin->saveResource("itemName.yml", false);
-		$this->plugin->itemName = (new Config ( $this->plugin->getDataFolder () . "itemName.yml", Config::YAML ))->getAll ();
-		$this->plugin->itemCloudConfig = (new Config ( $this->plugin->getDataFolder () . "itemCloud.yml", Config::YAML ));
-		$this->plugin->itemCloud = $this->plugin->itemCloudConfig->getAll();
-		$this->plugin->VMachineConfig = (new Config ( $this->plugin->getDataFolder () . "VendingMachine.yml", Config::YAML ));
-		$this->plugin->VMachine = $this->plugin->VMachineConfig->getAll();
-		$this->plugin->shopConfig = (new Config ( $this->plugin->getDataFolder () . "shop.yml", Config::YAML ));
-		$this->plugin->shop = $this->plugin->shopConfig->getAll();
+		if(!isset(Config::$formats[$this->plugin->setting['saveFormat']])) {
+			$this->plugin->getLogger()->error(TextFormat::RED."'{$this->plugin->setting['saveFormat']}' 은(는) 지원하지 않는 저장형식입니다.");
+		}else{
+			$saveFormat = Config::$formats[$this->plugin->setting['saveFormat']];
+			$this->plugin->saveResource("itemName.yml", false);
+			$this->plugin->itemName = (new Config ( $this->plugin->getDataFolder () . "itemName.yml", Config::YAML))->getAll ();
+			$this->plugin->itemCloudConfig = (new Config ( $this->plugin->getDataFolder () . "itemCloud.".strtolower($this->plugin->setting['saveFormat']), $saveFormat));
+			$this->plugin->VMachineConfig = (new Config ( $this->plugin->getDataFolder () . "VendingMachine.".strtolower($this->plugin->setting['saveFormat']), $saveFormat));
+			$this->plugin->shopConfig = (new Config ( $this->plugin->getDataFolder () . "shop.".strtolower($this->plugin->setting['saveFormat']), $saveFormat));
+			$this->plugin->itemCloud = $this->plugin->itemCloudConfig->getAll();
+			$this->plugin->VMachine = $this->plugin->VMachineConfig->getAll();
+			$this->plugin->shop = $this->plugin->shopConfig->getAll();
+		}
 	}
 
 	public function registerCommand($name, $permission, $description = "", $usage = "") {

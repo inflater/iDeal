@@ -1,7 +1,7 @@
 name: iDeal
 main: inflater\iDeal\iDeal
-version: "1.0.6-release"
-author: Inflater(egmzkdhtm)
+version: "1.0.7-release"
+author: InflateR(egmzkdhtm@naver.com)
 api:
 - 1.12.0
 - 1.13.0

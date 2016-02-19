@@ -103,13 +103,12 @@ class AuctionEvent implements Listener {
 			foreach($this->data['player']->getInventory()->getContents() as $content) {
 				if($content->getId()===(int) $item[0] && $content->getDamage()===(int) $item[1]) { $have += $content->getCount(); }
 			}
-			
 			if($have < $this->data['count']) { $this->plugin->sMsg('all', 'auction-successfulBid-fail-1', 4, TextFormat::RED); unset($this->data); return; }
 			if($this->plugin->EconomyAPI->myMoney($this->data['biddingUser']) < $this->data['bid']) { $this->plugin->sMsg('all', 'auction-successfulBid-fail-2', 4, TextFormat::RED); unset($this->data); return; }
 			$this->plugin->sMsg('all', 'auction-successfulBid-2', 4, TextFormat::DARK_GREEN, [$this->data['biddingUser']->getName(), $this->plugin->getItemName($this->data['item']), $this->data['count'], $this->data['bid']]);
 
-			$this->data['player']->getInventory()->removeItem(Item::get($item[0], $item[1], $this->data['count']));
-			$this->data['biddingUser']->getInventory()->addItem(Item::get($item[0], $item[1], $this->data['count']));
+			$this->data['player']->getInventory()->removeItem(Item::get((int) $item[0], (int) $item[1], (int) $this->data['count']));
+			$this->data['biddingUser']->getInventory()->addItem(Item::get((int) $item[0], (int) $item[1], (int) $this->data['count']));
 			$this->plugin->sMsg($this->data['biddingUser'], 'auction-successfulBid-3', 4, null, [$this->plugin->getItemName($this->data['item']), $this->data['count']]);
 
 			$this->plugin->EconomyAPI->reduceMoney($this->data['biddingUser'], $this->data['bid']);
